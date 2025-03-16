@@ -16,6 +16,30 @@ import time
 # Load environment variables from .env file
 load_dotenv()
 
+def extract_message_content(message) -> str:
+    """Extract text content from an Anthropic response message.
+    
+    This function handles different response structures, including thinking blocks.
+    It prioritizes finding text blocks in the response content.
+    """
+    # Check for text blocks first, they're what we want
+    content_text = None
+    for block in message.content:
+        if not hasattr(block, 'type') or block.type == "text":
+            if hasattr(block, 'text'):
+                content_text = block.text
+                break
+    
+    # If no text block found, fall back to using first block or error message
+    if not content_text:
+        content_block = message.content[0]
+        if hasattr(content_block, 'text'):
+            content_text = content_block.text
+        else:
+            content_text = "Unable to extract content properly from response."
+            
+    return content_text
+
 def read_seed(seed_path: Path) -> str:
     """Read the seed file content."""
     with open(seed_path, 'r') as f:
@@ -62,20 +86,8 @@ def generate_initial_outline(client: anthropic.Anthropic, seed_content: str) -> 
     print("  ✅ Initial outline generated!", flush=True)
     
     try:
-        # Extract the text content from the message properly handling different block types
-        content_block = message.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'thinking'):
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(message.content) > 1 and hasattr(message.content[1], 'text'):
-                content_text = message.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(message)
         
         # Print a small preview of the outline
         preview = content_text[:150] + "..."
@@ -128,20 +140,8 @@ def critique_outline(client: anthropic.Anthropic, outline: str, seed_content: st
     print("  ✅ Critique completed!", flush=True)
     
     try:
-        # Extract the text content from the message properly handling different block types
-        content_block = message.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'thinking'):
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(message.content) > 1 and hasattr(message.content[1], 'text'):
-                content_text = message.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(message)
         
         # Print a small preview of the critique
         preview = content_text[:150] + "..."
@@ -243,20 +243,8 @@ Symbolic Meaning:
     print("  ✅ Initial character profiles generated!", flush=True)
     
     try:
-        # Extract the text content from the message properly handling different block types
-        content_block = message.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'thinking'):
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(message.content) > 1 and hasattr(message.content[1], 'text'):
-                content_text = message.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(message)
         
         # Print a small preview
         preview = content_text[:150] + "..."
@@ -319,20 +307,8 @@ def critique_character_profiles(client: anthropic.Anthropic, profiles: str, outl
     print("  ✅ Character profile critique completed!", flush=True)
     
     try:
-        # Extract the text content from the message properly handling different block types
-        content_block = message.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'thinking'):
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(message.content) > 1 and hasattr(message.content[1], 'text'):
-                content_text = message.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(message)
         
         # Print a small preview
         preview = content_text[:150] + "..."
@@ -397,20 +373,8 @@ def improve_character_profiles(client: anthropic.Anthropic, profiles: str, profi
     print("  ✅ Improved character profiles generated!", flush=True)
     
     try:
-        # Extract the text content from the message properly handling different block types
-        content_block = message.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'thinking'):
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(message.content) > 1 and hasattr(message.content[1], 'text'):
-                content_text = message.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(message)
         
         # Print a small preview
         preview = content_text[:150] + "..."
@@ -522,20 +486,8 @@ def generate_story_hooks(client: anthropic.Anthropic, outline: str, character_pr
     print("  ✅ Story hooks generated!", flush=True)
     
     try:
-        # Extract the text content from the message properly handling different block types
-        content_block = message.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'thinking'):
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(message.content) > 1 and hasattr(message.content[1], 'text'):
-                content_text = message.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(message)
         
         # Print a small preview
         preview = content_text[:150] + "..."
@@ -548,18 +500,14 @@ def generate_story_hooks(client: anthropic.Anthropic, outline: str, character_pr
         print(f"  ℹ️ Content blocks: {[type(block) for block in message.content]}", flush=True)
         raise
 
-def save_story_hooks(hooks: str, seed_path: Path) -> Path:
+def save_story_hooks(hooks: str, seed_path: Path, story_dir: Path) -> Path:
     """Save story hooks to a file."""
     print("\n[✍️] Saving story hooks...", flush=True)
     
-    # Create hooks directory if it doesn't exist
-    hooks_dir = Path('hooks')
-    hooks_dir.mkdir(exist_ok=True)
-    
     seed_name = seed_path.stem
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    hooks_filename = f"{seed_name}_hooks_{timestamp}.md"
-    hooks_path = hooks_dir / hooks_filename
+    hooks_filename = f"{seed_name}_hooks.md"
+    hooks_path = story_dir / hooks_filename
     
     with open(hooks_path, 'w') as f:
         f.write(hooks)
@@ -628,20 +576,8 @@ def improve_outline_with_profiles_and_hooks(client: anthropic.Anthropic, outline
     print("  ✅ Improved outline with character profiles and hooks generated!", flush=True)
     
     try:
-        # Extract the text content from the message properly handling different block types
-        content_block = message.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'thinking'):
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(message.content) > 1 and hasattr(message.content[1], 'text'):
-                content_text = message.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(message)
         
         # Print a small preview of the final outline
         preview = content_text[:150] + "..."
@@ -654,17 +590,13 @@ def improve_outline_with_profiles_and_hooks(client: anthropic.Anthropic, outline
         print(f"  ℹ️ Content blocks: {[type(block) for block in message.content]}", flush=True)
         raise
 
-def save_outline(final_outline: str, seed_path: Path) -> Path:
+def save_outline(final_outline: str, seed_path: Path, story_dir: Path) -> Path:
     """Save the final outline to a file."""
     print("\n[8/8] Saving final outline...", flush=True)
     
-    outlines_dir = Path('outlines')
-    outlines_dir.mkdir(exist_ok=True)
-    
     seed_name = seed_path.stem
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    outline_filename = f"{seed_name}_{timestamp}.md"
-    outline_path = outlines_dir / outline_filename
+    outline_filename = f"{seed_name}_outline.md"
+    outline_path = story_dir / outline_filename
     
     with open(outline_path, 'w') as f:
         f.write(final_outline)
@@ -689,6 +621,7 @@ def main():
     parser.add_argument("--skip-profiles", action="store_true", help="Skip character profile generation")
     parser.add_argument("--skip-profile-critique", action="store_true", help="Skip the character profile critique and improvement")
     parser.add_argument("--skip-hooks", action="store_true", help="Skip the story hooks generation")
+    parser.add_argument("--output-dir", type=str, help="Custom directory to save all output files (default: stories/<seed_name>)")
     args = parser.parse_args()
     
     seed_path = Path(args.seed)
@@ -703,6 +636,24 @@ def main():
         start_time = datetime.datetime.now()
         
         client = anthropic.Anthropic()
+        
+        # Create a story directory to hold all output files
+        seed_name = seed_path.stem
+        if args.output_dir:
+            story_dir = Path(args.output_dir)
+        else:
+            stories_dir = Path('stories')
+            stories_dir.mkdir(exist_ok=True)
+            story_dir = stories_dir / seed_name
+        
+        story_dir.mkdir(exist_ok=True, parents=True)
+        print(f"📁 All story files will be saved to: {story_dir}", flush=True)
+        
+        # Copy the original seed to the story directory
+        seed_copy_path = story_dir / f"{seed_name}_seed.md"
+        with open(seed_path, 'r') as src, open(seed_copy_path, 'w') as dst:
+            dst.write(src.read())
+        print(f"📄 Seed file copied to: {seed_copy_path}", flush=True)
         
         # Read seed content
         seed_content = read_seed(seed_path)
@@ -741,19 +692,13 @@ def main():
                 display_progress_update()
             
             # Save final character profiles
-            # Add the missing save_character_profiles function
-            def save_character_profiles(profiles: str, seed_path: Path) -> Path:
+            def save_character_profiles(profiles: str, seed_path: Path, story_dir: Path) -> Path:
                 """Save character profiles to a file."""
                 print("\n[✍️] Saving character profiles...", flush=True)
                 
-                # Create profiles directory if it doesn't exist
-                profiles_dir = Path('profiles')
-                profiles_dir.mkdir(exist_ok=True)
-                
                 seed_name = seed_path.stem
-                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                profiles_filename = f"{seed_name}_profiles_{timestamp}.md"
-                profiles_path = profiles_dir / profiles_filename
+                profiles_filename = f"{seed_name}_profiles.md"
+                profiles_path = story_dir / profiles_filename
                 
                 with open(profiles_path, 'w') as f:
                     f.write(profiles)
@@ -762,7 +707,7 @@ def main():
                 
                 return profiles_path
                 
-            profiles_path = save_character_profiles(final_character_profiles, seed_path)
+            profiles_path = save_character_profiles(final_character_profiles, seed_path, story_dir)
         
         # Generate story hooks
         if args.skip_hooks:
@@ -771,7 +716,7 @@ def main():
             hooks_path = None
         else:
             story_hooks = generate_story_hooks(client, initial_outline, final_character_profiles, seed_content)
-            hooks_path = save_story_hooks(story_hooks, seed_path)
+            hooks_path = save_story_hooks(story_hooks, seed_path, story_dir)
             display_progress_update()
         
         # Improve the outline based on critique, character profiles, and story hooks
@@ -781,7 +726,23 @@ def main():
         display_progress_update()
         
         # Save the final outline
-        outline_path = save_outline(final_outline, seed_path)
+        outline_path = save_outline(final_outline, seed_path, story_dir)
+        
+        # Create a metadata file that contains information about all generated files
+        metadata = {
+            "seed": str(seed_copy_path),
+            "outline": str(outline_path),
+            "profiles": str(profiles_path) if profiles_path else None,
+            "hooks": str(hooks_path) if hooks_path else None,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "story_dir": str(story_dir)
+        }
+        
+        metadata_path = story_dir / "story_metadata.json"
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+        
+        print(f"📋 Story metadata saved to: {metadata_path}", flush=True)
         
         end_time = datetime.datetime.now()
         total_time = end_time - start_time
@@ -793,7 +754,9 @@ def main():
             print(f"👤 Character profiles saved to: {profiles_path}", flush=True)
         if hooks_path:
             print(f"🎣 Story hooks saved to: {hooks_path}", flush=True)
-        print(f"🎉 Done! You can now view your story materials in the respective directories.", flush=True)
+        print(f"📁 All story files saved to: {story_dir}", flush=True)
+        print(f"🎉 Done! You can now generate a story using:", flush=True)
+        print(f"   ./generate_story.py --story-dir {story_dir}", flush=True)
         
     except Exception as e:
         print(f"\n❌ Error: {e}")

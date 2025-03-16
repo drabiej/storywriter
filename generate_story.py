@@ -18,43 +18,78 @@ import sys
 import argparse
 import time
 import glob
+import json
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 from dotenv import load_dotenv
 import anthropic
 
+def extract_message_content(response) -> str:
+    """Extract text content from an Anthropic response message.
+    
+    This function handles different response structures, including thinking blocks.
+    It prioritizes finding text blocks in the response content.
+    """
+    # Check for text blocks first, they're what we want
+    content_text = None
+    for block in response.content:
+        if not hasattr(block, 'type') or block.type == "text":
+            if hasattr(block, 'text'):
+                content_text = block.text
+                break
+    
+    # If no text block found, fall back to using first block or error message
+    if not content_text:
+        content_block = response.content[0]
+        if hasattr(content_block, 'text'):
+            content_text = content_block.text
+        else:
+            content_text = "Unable to extract content properly from response."
+            
+    return content_text
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate a story from an outline using Claude")
+    
+    # Story directory argument (new primary method)
+    parser.add_argument(
+        "--story-dir", 
+        type=str, 
+        help="Path to the story directory containing all story files (created by generate_outline.py)"
+    )
+    
+    # Legacy individual file arguments
     parser.add_argument(
         "--outline", 
         type=str, 
-        required=True, 
-        help="Path to the outline file"
+        help="Path to the outline file (use --story-dir instead for consolidated files)"
     )
     parser.add_argument(
         "--hooks",
         type=str,
-        help="Path to the hooks file (default: auto-detect based on outline name)"
+        help="Path to the hooks file (use --story-dir instead for consolidated files)"
     )
     parser.add_argument(
         "--profiles",
         type=str,
-        help="Path to the character profiles file (default: auto-detect based on outline name)"
+        help="Path to the character profiles file (use --story-dir instead for consolidated files)"
     )
     parser.add_argument(
         "--seed",
         type=str,
-        help="Path to the original seed file (default: auto-detect based on outline name)"
+        help="Path to the original seed file (use --story-dir instead for consolidated files)"
     )
     parser.add_argument(
         "--input-dir",
         type=str,
-        help="Directory containing all input files (outline, hooks, profiles, seed) for a story"
+        help="Directory containing all input files (use --story-dir instead for consolidated files)"
     )
+    
+    # Other arguments
     parser.add_argument(
         "--output", 
         type=str, 
-        help="Output file path (default: stories/<outline_filename>.md)"
+        help="Output file path (default: <story_dir>/<story_name>.md)"
     )
     parser.add_argument(
         "--temperature", 
@@ -95,10 +130,114 @@ def read_file(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
 
-def find_story_files(outline_path: str, input_dir: Optional[str] = None, 
-                    hooks_path: Optional[str] = None, profiles_path: Optional[str] = None,
-                    seed_path: Optional[str] = None) -> Tuple[str, Optional[str], Optional[str], Optional[str]]:
-    """Find related story files based on outline name or input directory."""
+def find_story_files(
+    story_dir: Optional[str] = None,
+    outline_path: Optional[str] = None, 
+    input_dir: Optional[str] = None, 
+    hooks_path: Optional[str] = None, 
+    profiles_path: Optional[str] = None,
+    seed_path: Optional[str] = None
+) -> Tuple[str, Optional[str], Optional[str], Optional[str]]:
+    """Find related story files based on story directory or outline name."""
+    
+    # If story_dir is provided, that's our new primary method
+    if story_dir:
+        story_dir_path = Path(story_dir)
+        if not story_dir_path.exists() or not story_dir_path.is_dir():
+            print(f"Warning: Story directory '{story_dir}' not found or is not a directory")
+            if outline_path:
+                print(f"Falling back to using outline: {outline_path}")
+            else:
+                raise ValueError(f"Story directory '{story_dir}' not found and no outline specified")
+        else:
+            # Check for metadata file first
+            metadata_path = story_dir_path / "story_metadata.json"
+            if metadata_path.exists():
+                try:
+                    with open(metadata_path, 'r') as f:
+                        metadata = json.load(f)
+                    
+                    found_outline = metadata.get("outline")
+                    found_hooks = metadata.get("hooks")
+                    found_profiles = metadata.get("profiles")
+                    found_seed = metadata.get("seed")
+                    
+                    # Validate paths exist
+                    if found_outline and Path(found_outline).exists():
+                        print(f"Found outline file from metadata: {found_outline}")
+                    else:
+                        found_outline = None
+                        
+                    if found_hooks and Path(found_hooks).exists():
+                        print(f"Found hooks file from metadata: {found_hooks}")
+                    else:
+                        found_hooks = None
+                        
+                    if found_profiles and Path(found_profiles).exists():
+                        print(f"Found profiles file from metadata: {found_profiles}")
+                    else:
+                        found_profiles = None
+                        
+                    if found_seed and Path(found_seed).exists():
+                        print(f"Found seed file from metadata: {found_seed}")
+                    else:
+                        found_seed = None
+                    
+                    # If we found at least the outline, return the files
+                    if found_outline:
+                        return found_outline, found_hooks, found_profiles, found_seed
+                    
+                except Exception as e:
+                    print(f"Error reading metadata file: {e}")
+                    print("Falling back to file pattern search")
+            
+            # If metadata file not found or invalid, search by pattern in the story directory
+            dir_name = story_dir_path.name
+            
+            # Look for outline file
+            outline_pattern = f"{dir_name}_outline.md"
+            outline_files = list(story_dir_path.glob(outline_pattern))
+            if not outline_files:
+                # Try any file with "outline" in the name
+                outline_files = list(story_dir_path.glob("*outline*.md"))
+            
+            if outline_files:
+                found_outline = str(outline_files[0])
+                print(f"Found outline file: {found_outline}")
+            else:
+                if outline_path:
+                    found_outline = outline_path
+                    print(f"Using provided outline file: {found_outline}")
+                else:
+                    raise ValueError(f"No outline file found in story directory: {story_dir}")
+            
+            # Look for hooks file
+            hooks_pattern = f"{dir_name}_hooks.md"
+            hooks_files = list(story_dir_path.glob(hooks_pattern))
+            found_hooks = str(hooks_files[0]) if hooks_files else None
+            if found_hooks:
+                print(f"Found hooks file: {found_hooks}")
+            
+            # Look for profiles file
+            profiles_pattern = f"{dir_name}_profiles.md"
+            profiles_files = list(story_dir_path.glob(profiles_pattern))
+            found_profiles = str(profiles_files[0]) if profiles_files else None
+            if found_profiles:
+                print(f"Found profiles file: {found_profiles}")
+            
+            # Look for seed file
+            seed_pattern = f"{dir_name}_seed.md"
+            seed_files = list(story_dir_path.glob(seed_pattern))
+            found_seed = str(seed_files[0]) if seed_files else None
+            if found_seed:
+                print(f"Found seed file: {found_seed}")
+            
+            return found_outline, found_hooks, found_profiles, found_seed
+    
+    # If we reach here, we're using the legacy method with outline_path as primary
+    if not outline_path:
+        raise ValueError("Either --story-dir or --outline must be provided")
+    
     outline_file = Path(outline_path)
     story_name = outline_file.stem
     
@@ -134,7 +273,7 @@ def find_story_files(outline_path: str, input_dir: Optional[str] = None,
         
         # Check for hooks file
         if not found_hooks:
-            hooks_pattern = f"{base_name}_hooks_*.md"
+            hooks_pattern = f"{base_name}_hooks*.md"
             hooks_files = list(input_dir_path.glob(hooks_pattern))
             if hooks_files:
                 # Use the most recent one based on filename timestamp
@@ -144,7 +283,7 @@ def find_story_files(outline_path: str, input_dir: Optional[str] = None,
         
         # Check for profiles file
         if not found_profiles:
-            profiles_pattern = f"{base_name}_profiles_*.md"
+            profiles_pattern = f"{base_name}_profiles*.md"
             profiles_files = list(input_dir_path.glob(profiles_pattern))
             if profiles_files:
                 # Use the most recent one based on filename timestamp
@@ -154,8 +293,11 @@ def find_story_files(outline_path: str, input_dir: Optional[str] = None,
         
         # Check for seed file in input directory
         if not found_seed:
-            seed_pattern = f"{base_name}.md"
+            seed_pattern = f"{base_name}*seed*.md"
             seed_files = list(input_dir_path.glob(seed_pattern))
+            if not seed_files:
+                seed_pattern = f"{base_name}.md"
+                seed_files = list(input_dir_path.glob(seed_pattern))
             if seed_files:
                 found_seed = str(seed_files[0])
                 print(f"Found seed file: {found_seed}")
@@ -396,6 +538,60 @@ def extract_chapter_hooks(hooks_text: str, chapter_number: int) -> Dict[str, str
     
     return result
 
+def generate_chapter_summary(
+    client: anthropic.Anthropic,
+    chapter_content: str,
+    chapter_number: int,
+    chapter_title: str,
+    temperature: float = 0.7
+) -> str:
+    """Generate a concise bullet point summary of the key elements in a chapter."""
+    
+    print(f"Generating bullet point summary for Chapter {chapter_number}...", end="", flush=True)
+    
+    summary_prompt = f"""
+    Please create a concise bullet point summary of Chapter {chapter_number}: {chapter_title}.
+    
+    Focus on:
+    - Key plot developments
+    - Important character actions and decisions
+    - Critical revelations or information
+    - Major emotional or relationship changes
+    - Setting details that impact the storyline
+    
+    Format the summary as 5-10 bullet points, each no more than 1-2 sentences.
+    Each bullet should capture one concrete, important element from the chapter.
+    Be specific rather than general.
+    
+    The summary will be used to maintain continuity in future chapters, so focus on elements that future chapters need to build upon.
+    """
+    
+    try:
+        start_time = time.time()
+        
+        response = client.messages.create(
+            model="claude-3-7-sonnet-20250219",
+            max_tokens=2000,
+            temperature=temperature,
+            messages=[
+                {"role": "user", "content": f"Here is the content of Chapter {chapter_number}:\n\n{chapter_content}"},
+                {"role": "user", "content": summary_prompt}
+            ]
+        )
+        
+        # Calculate and display generation time
+        elapsed_time = time.time() - start_time
+        print(f" done! ({elapsed_time:.1f} seconds)")
+        
+        # Extract the summary text
+        summary_text = response.content[0].text
+        
+        return summary_text
+        
+    except Exception as e:
+        print(f"\nError generating chapter summary: {e}")
+        return f"• Chapter {chapter_number} summary generation failed"
+
 def revise_chapter(
     client: anthropic.Anthropic,
     chapter_content: str,
@@ -489,13 +685,27 @@ def revise_chapter(
        - Ensure character motivations are clear and consistent with their background
        - Dialogue should reflect each character's unique voice and perspective
     4. WRITING STYLE:
-       - Adhere strictly to the writing style and tone guidance from the seed document
+       - Adhere strictly to the period-appropriate language and setting-consistent vocabulary
+       - Eliminate ANY anachronistic terms, concepts, or phrasing
        - Maintain the appropriate genre conventions and stylistic elements
        - Balance description, dialogue, and action according to seed preferences
-    5. HOOK INTEGRATION: Confirm all relevant hooks are properly established, developed, or resolved
-    6. CONTINUITY: Maintain perfect continuity with previous/surrounding story elements
-    7. SETTING REALISM: Ensure the world and setting details are consistent and realistic
-    8. PROSE QUALITY: Improve writing quality, flow, dialogue, and descriptions where needed
+    5. LANGUAGE VARIETY:
+       - Identify and fix repetitive sentence structures, words, or patterns
+       - Vary paragraph and sentence length to improve rhythm and flow
+       - Ensure diverse descriptive techniques (sensory details, metaphors, etc.)
+       - Reduce overuse of character names/pronouns at sentence beginnings
+       - Replace generic descriptions with more specific, vivid, setting-appropriate ones
+    6. HOOK INTEGRATION: Confirm all relevant hooks are properly established, developed, or resolved
+    7. CONTINUITY: Maintain perfect continuity with previous/surrounding story elements
+    8. SETTING REALISM: Ensure the world and setting details are consistent and realistic
+    9. PROSE QUALITY: Improve writing quality, flow, dialogue, and descriptions where needed
+    
+    SPECIFIC REVISION PRIORITIES:
+    - Find and eliminate ANY anachronistic vocabulary, idioms, or concepts
+    - Identify paragraphs with repetitive sentence structures and rewrite for variety
+    - Replace generic descriptions that could apply to any story with setting-specific ones
+    - Enhance passages with too much "tell" and not enough "show"
+    - Fix any instances where the text doesn't reflect the true nature of the time period/setting
     
     FORMAT REQUIREMENTS:
     - Maintain the chapter heading format: "## Chapter {chapter_number}: {chapter_info['title']}"
@@ -524,20 +734,8 @@ def revise_chapter(
         elapsed_time = time.time() - start_time
         print(f" done! ({elapsed_time:.1f} seconds)")
         
-        # Extract the text content from the message properly handling different block types
-        content_block = response.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'type') and content_block.type == "thinking":
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(response.content) > 1 and hasattr(response.content[1], 'text'):
-                content_text = response.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(response)
             
         # If thinking is in the response, analyze it (optional)
         thinking = None
@@ -567,6 +765,7 @@ def generate_chapter(
     profiles_text: Optional[str] = None,
     seed_text: Optional[str] = None,
     previous_chapter: Optional[str] = None,
+    chapter_summaries: Optional[Dict[int, str]] = None,
     temperature: float = 1.0
 ) -> str:
     """Generate a single chapter using Claude with thinking capability."""
@@ -574,11 +773,36 @@ def generate_chapter(
     # Prepare context for Claude
     chapter_context = []
     
-    # Add the original seed if available
+    # Create setting and period-appropriate style guide based on seed
     if seed_text:
+        # First, add the original seed
         chapter_context.append({
             "role": "user",
             "content": f"Here is the original seed concept for the story:\n\n{seed_text}\n\nThis represents the initial vision for the story."
+        })
+        
+        # Then generate a style guide based on the setting
+        style_guide_prompt = """
+        Based on the seed document above, create a brief style guide that ensures period-appropriate and setting-consistent writing:
+        
+        1. Identify the time period, culture, and setting of the story
+        2. List 5-7 linguistic patterns appropriate to this setting (vocabulary, sentence structure, etc.)
+        3. List 10-15 words/terms that would be appropriate for this setting
+        4. List 10-15 modern words/phrases/concepts to AVOID in this setting
+        5. Identify 3-5 distinctive stylistic elements to maintain throughout
+        
+        This style guide will help maintain authentic, period-appropriate language and avoid anachronisms.
+        """
+        
+        chapter_context.append({
+            "role": "user",
+            "content": style_guide_prompt
+        })
+        
+        # Add a response from Claude with the style guide
+        chapter_context.append({
+            "role": "assistant",
+            "content": "I'll create a style guide based on the seed document to ensure period-appropriate writing:"
         })
     
     # Add the outline for context
@@ -622,6 +846,20 @@ def generate_chapter(
             "content": hook_content
         })
     
+    # Add previous chapter summaries if available
+    if chapter_summaries and len(chapter_summaries) > 0:
+        summaries_content = "Here are summaries of the previous chapters to maintain continuity:\n\n"
+        
+        # Get all previous chapter summaries up to the current chapter
+        for ch_num in sorted(chapter_summaries.keys()):
+            if ch_num < chapter_number:
+                summaries_content += f"Chapter {ch_num} Summary:\n{chapter_summaries[ch_num]}\n\n"
+        
+        chapter_context.append({
+            "role": "user",
+            "content": summaries_content
+        })
+    
     # Add previous chapter if available
     if previous_chapter:
         chapter_context.append({
@@ -648,16 +886,29 @@ def generate_chapter(
            - Focus on behaviors relevant to this specific moment in the story arc
            - Ensure character motivations are clear and consistent with their background
            - Dialogue should reflect each character's unique voice and perspective
-        3. Follow the writing style guidance from the seed document:
-           - Adhere to the specified tone, style, and genre conventions
+        3. Follow the writing style guidance from the seed document and style guide:
+           - Strictly adhere to period-appropriate language and setting-consistent vocabulary
+           - Avoid any anachronistic terms, concepts, or phrasing
+           - Maintain the specified tone, style, and genre conventions
            - Balance description, dialogue, and action as appropriate
-           - Maintain stylistic elements established in the seed
-        4. Create vivid descriptions and natural dialogue
+        4. Create vivid, varied descriptions and natural dialogue:
+           - Use different sentence structures and patterns to avoid repetition
+           - Vary paragraph lengths for better rhythm and pacing
+           - Employ diverse descriptive techniques (sensory details, metaphors, etc.)
+           - Avoid repeating the same words in close proximity
         5. Ensure proper pacing and meaningful development
         6. Integrate the strategic hooks properly (setups, developments, resolutions)
-        7. Revise for clarity, coherence, and impact
+        7. Revise for clarity, coherence, variety, and impact
         
-        Remember that context is king! Reference all available context including the outline, hooks, character profiles, and previous chapter to create a cohesive narrative.
+        IMPORTANT: If this chapter contains any of these common issues, actively work to avoid them:
+        - Overuse of character names or pronouns at the start of sentences
+        - Repetitive sentence structures or patterns
+        - Anachronistic vocabulary or concepts for the time period
+        - Generic descriptions that could apply to any story
+        - Modern idioms or expressions in historical settings
+        - Predictable scene transitions
+        
+        Remember that context is king! Reference all available context including the outline, hooks, character profiles, style guide, previous chapter summaries, and the full previous chapter to create a cohesive narrative that builds on what came before.
         
         Format the chapter using this structure:
         1. Start with a clear chapter heading: "## Chapter {chapter_number}: {chapter_info['title']}"
@@ -679,16 +930,29 @@ def generate_chapter(
            - Focus on behaviors relevant to this specific moment in the story arc
            - Ensure character motivations are clear and consistent with their background
            - Dialogue should reflect each character's unique voice and perspective
-        3. Follow the writing style guidance from the seed document:
-           - Adhere to the specified tone, style, and genre conventions
+        3. Follow the writing style guidance from the seed document and style guide:
+           - Strictly adhere to period-appropriate language and setting-consistent vocabulary
+           - Avoid any anachronistic terms, concepts, or phrasing
+           - Maintain the specified tone, style, and genre conventions
            - Balance description, dialogue, and action as appropriate
-           - Maintain stylistic elements established in the seed
-        4. Create vivid descriptions and natural dialogue
+        4. Create vivid, varied descriptions and natural dialogue:
+           - Use different sentence structures and patterns to avoid repetition
+           - Vary paragraph lengths for better rhythm and pacing
+           - Employ diverse descriptive techniques (sensory details, metaphors, etc.)
+           - Avoid repeating the same words in close proximity
         5. Ensure proper pacing and meaningful development
         6. Integrate the strategic hooks properly (setups, developments, resolutions)
-        7. Revise for clarity, coherence, and impact
+        7. Revise for clarity, coherence, variety, and impact
         
-        Remember that context is king! Reference all available context including the outline, hooks, character profiles, and previous chapter to create a cohesive narrative.
+        IMPORTANT: If this chapter contains any of these common issues, actively work to avoid them:
+        - Overuse of character names or pronouns at the start of sentences
+        - Repetitive sentence structures or patterns
+        - Anachronistic vocabulary or concepts for the time period
+        - Generic descriptions that could apply to any story
+        - Modern idioms or expressions in historical settings
+        - Predictable scene transitions
+        
+        Remember that context is king! Reference all available context including the outline, hooks, character profiles, style guide, previous chapter summaries, and the full previous chapter to create a cohesive narrative that builds on what came before.
         
         Format the chapter using this structure:
         1. Start with a clear chapter heading: "## Chapter {chapter_number}: {chapter_info['title']}"
@@ -719,20 +983,8 @@ def generate_chapter(
         elapsed_time = time.time() - start_time
         print(f" done! ({elapsed_time:.1f} seconds)")
         
-        # Extract the text content from the message properly handling different block types
-        content_block = response.content[0]
-        
-        # If it's a ThinkingBlock, we need to get the text content differently
-        if hasattr(content_block, 'type') and content_block.type == "thinking":
-            # For ThinkingBlock, get text from second content block which should be TextBlock
-            if len(response.content) > 1 and hasattr(response.content[1], 'text'):
-                content_text = response.content[1].text
-            else:
-                # Fallback if structure isn't as expected
-                content_text = "Unable to extract content properly from thinking block response."
-        else:
-            # Regular TextBlock
-            content_text = content_block.text
+        # Extract the text content from the message using our helper function
+        content_text = extract_message_content(response)
             
         # If thinking is in the response, analyze it (optional)
         thinking = None
@@ -764,8 +1016,17 @@ def main():
     
     # Find and validate story files (outline, hooks, profiles, seed)
     try:
+        # Check if either --story-dir or --outline is provided
+        if not args.story_dir and not args.outline:
+            print("Error: Either --story-dir or --outline must be provided")
+            print("Use --story-dir to specify a directory containing all story files")
+            print("Or use --outline to specify an outline file path (legacy mode)")
+            sys.exit(1)
+            
+        # Find story files
         outline_path, hooks_path, profiles_path, seed_path = find_story_files(
-            args.outline,
+            story_dir=args.story_dir,
+            outline_path=args.outline,
             input_dir=args.input_dir,
             hooks_path=args.hooks,
             profiles_path=args.profiles,
@@ -823,18 +1084,27 @@ def main():
         # Ensure parent directory exists
         output_path.parent.mkdir(parents=True, exist_ok=True)
     else:
-        # Default output structure: stories/<story_name>/<story_name>.md
-        outline_filename = Path(outline_path).stem
-        
-        # Strip timestamp if present (e.g., england_20250311_015444 -> england)
-        base_name = outline_filename.split('_')[0] if '_' in outline_filename else outline_filename
-        
-        # Create a dedicated folder for this story
-        story_dir = Path("stories") / base_name
-        story_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Create output file path
-        output_path = story_dir / f"{base_name}.md"
+        # Determine the output location based on input
+        if args.story_dir:
+            # If using story_dir, create output in the chapters directory
+            story_dir = Path(args.story_dir)
+            story_name = story_dir.name
+            chapters_dir = story_dir / "chapters"
+            chapters_dir.mkdir(exist_ok=True)
+            output_path = chapters_dir / f"{story_name}.md"
+        else:
+            # Legacy mode: use outline file name
+            outline_filename = Path(outline_path).stem
+            
+            # Strip timestamp if present (e.g., england_20250311_015444 -> england)
+            base_name = outline_filename.split('_')[0] if '_' in outline_filename else outline_filename
+            
+            # Create a dedicated folder for this story
+            story_dir = Path("stories") / base_name
+            story_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Create output file path
+            output_path = story_dir / f"{base_name}.md"
     
     print(f"Story output will be saved to: {output_path}")
     
@@ -890,6 +1160,9 @@ def main():
     total_revision_time = 0
     total_word_count = 0
     
+    # Dictionary to store chapter summaries
+    chapter_summaries = {}
+    
     if args.no_revision:
         print(f"\nStarting story generation with temperature {args.temperature}")
         print(f"Using Claude thinking capability with 16000 tokens budget (revision disabled)")
@@ -899,6 +1172,45 @@ def main():
     
     print(f"Generating chapters {start_chapter} to {start_chapter + len(chapters_to_generate) - 1}")
     print("-" * 60)
+    
+    # Create directories for chapter summaries
+    if args.story_dir:
+        # Use the story_dir if provided
+        story_dir = Path(args.story_dir)
+    else:
+        # Otherwise use output_path.parent
+        story_dir = output_path.parent
+        
+    chapters_dir = story_dir / "chapters"
+    chapters_dir.mkdir(exist_ok=True)
+    summaries_dir = chapters_dir / "summaries"
+    summaries_dir.mkdir(exist_ok=True)
+    
+    # Check if there are existing summaries from previous runs
+    # If continuing from a previous chapter, load existing summaries first
+    if start_chapter > 1:
+        for ch_num in range(1, start_chapter):
+            # Try to load from new location first, then fall back to old location if needed
+            summary_path = summaries_dir / f"chapter_{ch_num:02d}_summary.md"
+            old_summary_path = story_dir / "summaries" / f"chapter_{ch_num:02d}_summary.md"
+            
+            # For very old stories, also check if summaries are in the root of the story directory
+            root_summary_path = story_dir / f"chapter_{ch_num:02d}_summary.md"
+            
+            if summary_path.exists():
+                with open(summary_path, "r", encoding="utf-8") as f:
+                    chapter_summaries[ch_num] = f.read()
+                print(f"Loaded existing summary for Chapter {ch_num}")
+            elif old_summary_path.exists():
+                # For backward compatibility with existing stories
+                with open(old_summary_path, "r", encoding="utf-8") as f:
+                    chapter_summaries[ch_num] = f.read()
+                print(f"Loaded existing summary for Chapter {ch_num} from old location")
+            elif root_summary_path.exists():
+                # For very old stories with summaries in the root
+                with open(root_summary_path, "r", encoding="utf-8") as f:
+                    chapter_summaries[ch_num] = f.read()
+                print(f"Loaded existing summary for Chapter {ch_num} from root directory")
     
     for i, chapter_info in enumerate(chapters_to_generate, start_chapter):
         # Track time for both generation and revision
@@ -917,6 +1229,7 @@ def main():
             profiles_text=profiles_text,
             seed_text=seed_text,
             previous_chapter=previous_chapter,  # This is already the revised version from previous iteration
+            chapter_summaries=chapter_summaries,  # Pass all previous chapter summaries
             temperature=args.temperature
         )
         
@@ -952,6 +1265,23 @@ def main():
             previous_chapter = revised_chapter  # This revised chapter will be used in the next iteration
             chapter_to_save = revised_chapter
             
+            # Step 3: Generate bullet point summary of the revised chapter
+            chapter_summary = generate_chapter_summary(
+                client=client,
+                chapter_content=revised_chapter,
+                chapter_number=i,
+                chapter_title=chapter_info['title']
+            )
+            
+            # Store the chapter summary for future chapters
+            chapter_summaries[i] = chapter_summary
+            
+            # Save the summary to its own file
+            summary_path = summaries_dir / f"chapter_{i:02d}_summary.md"
+            with open(summary_path, "w", encoding="utf-8") as f:
+                f.write(chapter_summary)
+            print(f"  Chapter summary saved to: {summary_path}")
+            
             # Calculate total chapter time
             chapter_time = time.time() - start_time
             
@@ -966,6 +1296,23 @@ def main():
             previous_chapter = chapter_content  # Store for next iteration
             chapter_to_save = chapter_content
             
+            # For non-revised chapters, still generate a summary
+            chapter_summary = generate_chapter_summary(
+                client=client,
+                chapter_content=chapter_content,
+                chapter_number=i,
+                chapter_title=chapter_info['title']
+            )
+            
+            # Store the chapter summary for future chapters
+            chapter_summaries[i] = chapter_summary
+            
+            # Save the summary to its own file
+            summary_path = summaries_dir / f"chapter_{i:02d}_summary.md"
+            with open(summary_path, "w", encoding="utf-8") as f:
+                f.write(chapter_summary)
+            print(f"  Chapter summary saved to: {summary_path}")
+            
             # Calculate total chapter time
             chapter_time = time.time() - start_time
             
@@ -979,10 +1326,18 @@ def main():
         with open(output_path, "a", encoding="utf-8") as f:
             f.write(f"{chapter_to_save}\n\n")
             
-        # Write individual chapter file
-        story_dir = output_path.parent
+        # Write individual chapter file in chapters subfolder
+        if args.story_dir:
+            # Use the story_dir if provided
+            story_dir = Path(args.story_dir)
+        else:
+            # Otherwise use output_path.parent
+            story_dir = output_path.parent
+        
+        chapters_dir = story_dir / "chapters"
+        chapters_dir.mkdir(exist_ok=True)
         chapter_filename = f"chapter_{i:02d}.md"
-        chapter_path = story_dir / chapter_filename
+        chapter_path = chapters_dir / chapter_filename
         with open(chapter_path, "w", encoding="utf-8") as f:
             f.write(f"{chapter_to_save}")
         print(f"  Individual chapter saved to: {chapter_path}")
