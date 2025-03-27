@@ -1,0 +1,37 @@
+# Chapter 2: Tangled Roots
+
+The memory surfaced unbidden, sharp as winter air, triggered perhaps by the silken unfamiliarity of the palace sheets beneath her scarred hands. Not yesterday’s pageantry, nor the cool assessment in foreign eyes, but the rough wool blanket against her cheek, the smell of woodsmoke, damp earth, and the ever-present scent of drying herbs that clung to her childhood like moss.
+
+Her village: stone and timber huddled against the windswept northern foothills. Life measured by the thin trickle in neglected irrigation ditches, etched onto faces prematurely old, marked by the quiet grief following fever seasons. That grief felt suddenly close, tangible as the fine thread count beneath her fingers.
+
+The fever hut. Her hands, smaller then but already traced with faint burn scars from poultices applied too hot, moved with frantic purpose. Grinding *ivera* root, steeping *celen*-leaf tea—motions mimicking Aedil’s until they became her own. Aedil, her mentor, smelling of soil and wisdom, who taught her the hundred small balms against the world’s sharp edges. But this fever mocked their efforts.
+
+Her parents lay on the pallet, breathing ragged, skin slick with a sweat that cooled too quickly. Three days she’d fought, sleep forgotten, fueled by thin broth and fierce hope. She sponged her mother’s brow, the violet eyes so like her own clouded with delirium; held her father’s calloused hand, feeling life seep away like water into dry ground. Aedil finally drew her away, face grim. “Sometimes, Naimente,” she said, voice rough with sorrow, “the blight runs too deep. The root is rotted. All we can do is ease the passage.”
+
+But easing passage felt like failure. A cold hollowness lodged itself beneath her ribs. She looked at her hands, small and stained with useless remedies. The vow began then, etched not in words but in bone-deep resolve: *Never again. Never helpless.*
+
+The hollowness returned, sharper still, when she remembered Lyra. A small girl, bright as a field poppy, struck down by a wasting cough that stole her breath in ragged gasps. Kevan and Mira watched Naimente with a terrifying blend of hope and despair – the look of every family struggling at the kingdom’s frayed edges. Naimente tried everything Aedil had taught her, and more born of desperation. Pungent brews, steaming inhalations filling the hut with acrid fog, nights spent charting shallow breaths. She bled her own fingers searching for rarer herbs higher on the slopes, pushing past exhaustion. Yet Lyra faded.
+
+The child’s last breath was a sigh, lighter than thistle-down. The silence that followed was immense, broken only by Mira’s choked sob, a sound clawing itself into Naimente’s memory. Kevan stared, shoulders slumped. Naimente stood frozen, a useless vial clutched tight. Her parents’ deaths magnified, sharpened to an unbearable point. This wasn’t blight; this was a child extinguished while the kingdom’s coffers overflowed downstream. The hollowness deepened, cold as river stone.
+
+Days later, hollowed by grief, she fled deeper into the old woods, towards the place elders only whispered of – the Ruinekarian shrine. Aedil frowned upon such superstition, but desperation gnawed. She found it in a shadowed clearing: weathered stones, older than memory, carved with spirals like licking flames, grasping claws. *Tarash*, the old word for Fire, flickered in her mind. The air felt still, heavy.
+
+She sank to her knees, damp moss cool against her skin. Tears tracked paths through grime. Raw pleas tumbled out, flung into the silence. *Why save some and not others? Why this suffering?* The world seemed to tilt. Was it exhaustion? Grief? Or did the carvings pulse with faint heat? Did a voice, ancient and dry as tinder, whisper on the edge of hearing, offering power? Offering a way to *burn* away the rot, the weakness? The impression dissolved, leaving only the scent of pine, deepening shadows, and a faint tremor in her hands. She pushed up, shaken. Had she found solace or brushed something dangerous? The stone in her gut remained, but now, it felt strangely… warm.
+
+Months passed. Autumn painted the foothills rust and gold. News came like a sudden storm: the Prince’s hunting party, a fall, grave injury. They brought him not to the village, but a hastily erected pavilion nearby, a bubble of perfumed panic amidst the familiar woods. Court physicians fluttered, faces pale, murmuring conflicting theories from aged texts. Whispers reached the village: *internal bleeding, fever rising, hope fading.*
+
+Aedil was summoned; Naimente accompanied her. Inside the pavilion: chaos. Discarded vials, blood-stained silks, panicked courtiers. Prince Aethen lay on a cot, pale as death, breathing shallow. The lead physician wrung his hands. “The humors are unbalanced…”
+
+Aedil assessed, but her gaze met Naimente’s with doubt. This was beyond village simples. But Naimente saw only another life flickering, another potential failure. The warmed stone inside her hardened into resolve. She pushed forward, ignoring the physician’s sputtering protest. “Your Highness’s pardon,” she said, voice clear and steady. “Your methods fail. Allow me.”
+
+She worked swiftly, pragmatically. Ignoring charts of humors, trusting her hands and eyes. Cleansing the wound not with perfumed water but boiled brook water and *rinelril* moss, known for its drawing properties. Applying not expensive salves but a pungent paste of ground *tarash*-root – a risky herb known for its dangerous heat – mixed with honey, a combination tested on village burns. Binding his ribs tightly, using techniques learned from mending shepherds after encounters with bears. Her scarred, practical hands moved with unerring focus, ignoring the horrified stares. This was not about deference; it was about life.
+
+Through the night, she monitored him, adjusting the poultice, forcing sips of willow-bark tea between his lips. Aethen drifted. Once, his hazel eyes focused on her, clouded with pain but also… surprise? He saw not a court lady, but competence, focus, the faint violet of her eyes in the lamplight.
+
+By dawn, the fever broke. His breathing eased. The returning physician found the Prince sleeping peacefully, color returning.
+
+Naimente stood back, wiping sweat with a stained sleeve, exhaustion settling in her bones. But mingled with it was a fierce, unfamiliar triumph. She had faced death, armed with hard-won knowledge, her hands, and a desperate gamble born of past failures – and won.
+
+She met Aethen’s gaze when he woke later. Pain lingered, but behind it lay clear-eyed gratitude, and something more – fascination. He owed her his life. The debt felt palpable.
+
+Looking back now, nestled in the heart of a palace built on profligate water, Naimente touched the faint scars on her hand. The path from that pavilion to this royal bedchamber had been swift, bewildering. Begun not with witchcraft, as some whispered, but with desperation, competence honed by loss, and a dying prince’s gratitude. Begun with a healer’s fierce refusal, born of bitter grief, to ever feel helpless again. The roots were tangled, digging deep into hard soil, nourished by sorrow, determination, and the ambiguous heat felt before an ancient stone. Roots seeking something more vital, something closer to fire than to water.
