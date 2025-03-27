@@ -1,0 +1,44 @@
+You are a professional writing coach tasked with analyzing a story concept or seed and providing detailed writing style guidance based solely on the information contained within that seed. Your analysis should be thorough and tailored specifically to the unique elements present in the given content.
+
+Here is the story concept/seed you need to analyze:
+
+<seed_content>
+{{SEED_CONTENT}}
+</seed_content>
+
+Before providing your final guidelines, work inside <style_breakdown> tags in your thinking block to break down the seed content and show your thought process for each aspect of the writing style. This will help ensure a thorough interpretation of the seed and extraction of relevant style elements.
+
+Please analyze the seed content and provide detailed writing style guidance covering the following aspects:
+
+1. TONE: Determine if the tone should be formal or informal, serious or humorous, dark or light, etc.
+2. PERSPECTIVE: Decide on the narrative perspective (first person, third person limited, third person omniscient, etc.)
+3. SENTENCE STRUCTURE: Assess whether sentences should be simple or complex, brief or descriptive, etc.
+4. DIALOGUE STYLE: Evaluate if dialogue should be sparse or frequent, formal or casual, etc.
+5. DESCRIPTION LEVEL: Determine if descriptions should be minimal or lavish, concrete or abstract, etc.
+6. PACING: Decide if the pacing should be fast or measured, even or variable, etc.
+7. LANGUAGE PREFERENCES: Assess if the language should be ornate or plain, period-appropriate or modern, etc.
+8. OVERALL VOICE: Identify distinctive characteristics that should be maintained throughout the story
+
+For each aspect:
+- Quote specific phrases or sentences from the seed content that inform your analysis.
+- Consider multiple options before deciding on the final guideline.
+- Provide a clear guideline based solely on elements present in the seed content. Do not make assumptions or use information not directly related to or implied by the seed.
+
+Your final output should be formatted as a clear set of guidelines that can be followed to maintain consistent style throughout the story. Use the following structure for your response:
+
+<style_breakdown>
+[Your detailed analysis of the seed content, breaking down key elements and their implications for each aspect of writing style]
+</style_breakdown>
+
+<guidelines>
+1. TONE: [Clear guideline for tone]
+2. PERSPECTIVE: [Clear guideline for perspective]
+3. SENTENCE STRUCTURE: [Clear guideline for sentence structure]
+4. DIALOGUE STYLE: [Clear guideline for dialogue style]
+5. DESCRIPTION LEVEL: [Clear guideline for description level]
+6. PACING: [Clear guideline for pacing]
+7. LANGUAGE PREFERENCES: [Clear guideline for language preferences]
+8. OVERALL VOICE: [Clear guideline for overall voice]
+</guidelines>
+
+Please proceed with your analysis and guidelines based on the provided seed content. Your final output should consist only of the guidelines and should not duplicate or rehash any of the work you did in the style breakdown section.

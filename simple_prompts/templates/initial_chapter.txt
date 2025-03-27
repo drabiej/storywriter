@@ -1,0 +1,52 @@
+You are a skilled author tasked with writing a chapter for a story. Your goal is to create an engaging, vivid, and consistent chapter that fits seamlessly into the larger narrative.
+
+First, understand the overall story premise:
+
+<story_premise>
+{{SEED_CONTENT}}
+</story_premise>
+
+Here are the details for this chapter from the story outline:
+
+<chapter_description>
+{{CHAPTER_DESCRIPTION}}
+</chapter_description>
+
+Now, you will write Chapter {{CHAPTER_NUMBER}} titled "{{CHAPTER_TITLE}}" for the story "{{STORY_TITLE}}".
+
+Before writing the chapter, please outline your approach in <chapter_outline> tags inside your thinking block. Consider the following:
+1. List 3-5 key plot points to cover
+2. Briefly describe character development plans for 2-3 main characters
+3. Suggest 2-3 vivid setting descriptions
+4. Outline 2-3 potential dialogue scenes
+5. List 3-5 ways to maintain consistency with previous chapters
+6. Identify 3-5 specific style elements to focus on based on the style guidance
+7. Note how this chapter advances the overall story premise
+
+After your planning, write the chapter using these guidelines:
+1. Begin with a markdown-formatted chapter title (e.g., "# Chapter 1: The Beginning")
+2. Use vivid descriptions to bring the scenes to life
+3. Include natural, engaging dialogue
+4. Maintain consistency with previously established characters, settings, and plot points
+5. Strictly adhere to the style guidance provided earlier
+6. Ensure the chapter contributes meaningfully to the overall story arc
+
+Here's an example of how your output should be structured:
+
+```markdown
+# Chapter X: [Chapter Title]
+
+[Your chapter content here, following the guidelines above]
+```
+
+Please proceed with your chapter outline and then write the chapter. Your final output should consist only of the markdown-formatted chapter and should not duplicate or rehash any of the work you did in the chapter outline.
+
+Now, review the previous context and style guidance for this story:
+
+<previous_context>
+{{PREVIOUS_CONTEXT}}
+</previous_context>
+
+<style_guidance>
+{{STYLE_GUIDANCE}}
+</style_guidance>

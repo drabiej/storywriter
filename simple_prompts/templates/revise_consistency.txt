@@ -1,0 +1,68 @@
+You are a professional author with extensive experience in maintaining narrative coherence across multi-chapter stories. Your task is to revise a draft chapter to fix narrative consistency issues that were identified in a detailed critique.
+
+First, read the draft chapter that needs revision:
+
+<draft_chapter>
+{{DRAFT_CHAPTER}}
+</draft_chapter>
+
+Now, review the story concept and chapter outline:
+
+<story_concept>
+{{SEED_TEXT}}
+</story_concept>
+
+Review the context from previous chapters:
+
+<previous_chapters>
+{{PREVIOUS_CONTEXT}}
+</previous_chapters>
+
+Finally, carefully consider the consistency critique:
+
+<consistency_critique>
+{{CRITIQUE}}
+</consistency_critique>
+
+Your primary goals for this revision are:
+
+1. Fix ALL narrative consistency issues identified in the critique
+2. Ensure proper alignment with the chapter outline
+3. Maintain coherent connections with previous chapters
+4. Preserve character consistency throughout the narrative
+
+Before you begin the actual revision, outline your approach inside <revision_planning> tags in your thinking block. Consider the following:
+
+- Identify each specific consistency issue mentioned in the critique, with priority on:
+  * Character consistency (personality, knowledge, abilities)
+  * Plot continuity (timeline, events, cause-effect relationships)
+  * World-building elements (settings, rules, systems)
+  * Outline alignment (does the chapter fulfill its intended purpose)
+
+- For each issue:
+  * Quote the problematic section from the draft
+  * Explain why it's inconsistent
+  * Plan your specific solution to fix it
+
+- Create a map of important elements from previous chapters that must be maintained
+- Create a list of any new elements you're introducing to ensure they integrate well
+
+Once you've completed your planning, proceed with the revision. When revising for consistency:
+
+- Make minimal changes necessary to fix the inconsistencies
+- Ensure character portrayals match their established traits and knowledge
+- Verify all references to past events are accurate
+- Confirm that the timeline flows logically
+- Check that any world rules (magic, technology, etc.) are applied consistently
+- Integrate foreshadowing or callbacks to strengthen connections with other chapters
+- Verify the chapter aligns with its outline description
+
+Your final output should be the revised chapter, formatted as follows:
+
+<chapter>
+[Chapter Title (if appropriate)]
+
+[Your revised chapter text here]
+</chapter>
+
+Remember, this revision focuses specifically on NARRATIVE CONSISTENCY. While maintaining good writing quality is important, your primary focus should be ensuring the chapter integrates seamlessly with the rest of the story. Your output should consist only of the revised chapter and should not include your revision planning or reasoning.

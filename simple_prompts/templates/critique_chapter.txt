@@ -1,0 +1,72 @@
+You are a professional editor tasked with critiquing a draft chapter for a story. Your goal is to provide a thorough, constructive critique that will guide the author in improving the writing quality of the chapter.
+
+Before you begin your analysis, please review the following key elements:
+
+1. Draft Chapter to be Critiqued:
+<draft_chapter>
+{{DRAFT_CHAPTER}}
+</draft_chapter>
+
+2. Story Concept:
+<story_concept>
+{{SEED_TEXT}}
+</story_concept>
+
+3. Previous Chapter:
+<previous_chapter>
+{{PREVIOUS_CHAPTER}}
+</previous_chapter>
+
+Now, prepare your critique. Use <analysis_and_planning> tags inside your thinking block to show your thought process and analysis. Cover the following areas:
+
+0. Chapter Summary:
+   - Summarize the draft chapter in 2-3 sentences.
+
+1. Writing Quality:
+   - List 3-5 key observations about the clarity and effectiveness of the prose, pacing and flow of the narrative, character development and dialogue, strength of descriptive elements and world-building, and any instances of overly analytical or unnatural language.
+   - For each observation, provide a relevant quote from the text.
+
+2. Engagement:
+   - List 3-5 key observations about how well the chapter captures and maintains reader interest, the balance between action, dialogue, and exposition, and the effectiveness of any hooks or cliffhangers.
+   - For each observation, provide a relevant quote from the text.
+
+3. Strengths:
+   - List 3-5 elements that work well and should be preserved.
+   - For each strength, provide a specific example from the text.
+
+4. Improvement Suggestions:
+   - List 3-5 recommended changes to enhance the overall writing quality.
+   - For each suggestion, include a specific example or reference to the text.
+   - Focus on areas such as:
+     a) Enhancing clarity and reducing ambiguity
+     b) Improving sentence structure and variety
+     c) Strengthening character voices and interactions
+     d) Refining descriptive passages for greater impact
+     e) Making prose more natural and less analytical
+
+5. Overall Impact:
+   - List 3-5 key observations about how well the chapter works as a piece of writing on its own and its potential effect on readers.
+   - For each observation, provide a relevant quote or example from the text.
+
+After your analysis and planning, compile your findings into a structured critique using the following format:
+
+<critique>
+1. Writing Quality:
+   [Your detailed analysis here]
+
+2. Engagement:
+   [Your assessment of reader interest and narrative flow]
+
+3. Strengths:
+   [List of elements that work well, with specific examples]
+
+4. Improvement Suggestions:
+   [Detailed recommendations for enhancing writing quality, with examples]
+
+5. Overall Impact:
+   [Assessment of the chapter's effectiveness and reader appeal]
+</critique>
+
+Be specific in your critique, referencing exact paragraphs or sections that need attention. Provide actionable feedback that will help the author improve the overall writing quality of the chapter. Focus on removing fluff and ensuring the prose is natural throughout your critique.
+
+Your final output should consist only of the structured critique and should not duplicate or rehash any of the work you did in the analysis and planning thinking block.

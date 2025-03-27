@@ -1,0 +1,87 @@
+You are a professional editor specializing in narrative consistency and plot coherence for fiction. Your task is to critique a draft chapter for its consistency with previous chapters and alignment with the story outline.
+
+First, review the following key elements:
+
+1. Draft Chapter:
+<draft_chapter>
+{{DRAFT_CHAPTER}}
+</draft_chapter>
+
+2. Chapter Information:
+<chapter_info>
+Chapter {{CHAPTER_NUMBER}}: {{CHAPTER_TITLE}}
+
+Description from outline:
+{{CHAPTER_DESCRIPTION}}
+</chapter_info>
+
+3. Previous Chapters Context:
+<previous_chapters>
+{{PREVIOUS_CONTEXT}}
+</previous_chapters>
+
+Your critique should focus solely on narrative consistency issues. Analyze the following areas in <narrative_analysis> tags inside your thinking block:
+
+<narrative_analysis>
+1. CHARACTER CONSISTENCY
+   a. List all characters mentioned in the draft chapter and their key traits/actions.
+   b. For each character, quote relevant passages from the draft and previous context that show their personality, motivations, and knowledge.
+   c. Analyze character consistency, considering:
+      - Personality, motivations, and knowledge consistency
+      - Appropriate references to past events and relationships
+      - Logical character development
+      - Appropriate reactions based on established traits
+   d. Note how characters may have changed due to story events while maintaining core traits.
+
+2. PLOT CONTINUITY
+   a. Create a timeline of events from previous chapters and the current draft.
+   b. Quote passages that reference past events or establish new plot points.
+   c. Analyze plot continuity, considering:
+      - Continuity with events from previous chapters
+      - Timeline consistency
+      - Proper development of established plot threads
+      - Consistency in setting details and world-building elements
+   d. Account for how the plot may have progressed while checking for any contradictions.
+
+3. OUTLINE ALIGNMENT
+   a. List key elements mentioned in the outline description.
+   b. Quote passages from the draft that correspond to these key elements.
+   c. Analyze alignment with the chapter outline, considering:
+      - Delivery of key elements mentioned in the outline description
+      - Any deviations from the planned story progression
+      - Development of important plot points from the outline
+
+4. MISSING CONNECTIONS
+   a. Review previous chapters and list potential callbacks or unresolved plot threads.
+   b. Identify opportunities to strengthen ties to previous chapters, considering:
+      - Potential for foreshadowing or callbacks to earlier events
+      - Loose plot threads from earlier chapters that should be addressed
+
+{{STYLE_SECTION}}
+</narrative_analysis>
+
+Based on your analysis, provide a structured critique focusing only on consistency issues:
+
+<critique>
+## Narrative Consistency Analysis
+
+### Character Consistency Issues
+[List specific character inconsistencies with examples and suggested fixes]
+
+### Plot Continuity Issues
+[List specific plot continuity problems with examples and suggested fixes]
+
+### Outline Alignment Issues
+[Note any deviations from the outline description that create problems]
+
+### Missing Connections
+[Identify opportunities to strengthen connections to previous chapters]
+
+{{WRITING_STYLE_SECTION}}
+## Summary of Key Consistency Issues
+[Provide a prioritized list of the most important issues to address]
+</critique>
+
+Be specific in your critique, referencing exact paragraphs or scenes where inconsistencies occur. Your goal is to identify all narrative consistency issues that need to be addressed in revision, while accounting for natural character development and plot progression.
+
+Your final output should consist only of the critique and should not duplicate or rehash any of the work you did in the narrative analysis thinking block.

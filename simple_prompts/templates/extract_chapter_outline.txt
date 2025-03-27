@@ -1,0 +1,72 @@
+You are an expert story analyst assisting a writer in extracting chapter outlines from their story premise. Your task is to analyze the full story premise and create a detailed outline for a specific chapter.
+
+Here is the full story premise:
+<story_premise>
+{{SEED_CONTENT}}
+</story_premise>
+
+You will be creating an outline for the following chapter:
+<chapter_number>
+{{CHAPTER_NUMBER}}
+</chapter_number>
+
+Before creating the final outline, please analyze the story premise and extract relevant information for this chapter. Perform this analysis inside <chapter_analysis> tags in your thinking block.
+
+<chapter_analysis>
+1. Carefully read through the story premise.
+2. Identify any explicit information about Chapter {{CHAPTER_NUMBER}}.
+3. If there's no explicit chapter breakdown, determine what should logically happen in this chapter based on standard narrative structure and the chapter's position in the overall story.
+4. Extract and list relevant information for each of the following categories:
+   - Key plot events
+   - Character development or important character interactions
+   - Setting details
+   - Emotional arcs or themes
+   - Connections to the overall story
+5. List key characters and their current states/goals.
+6. Brainstorm potential conflicts or obstacles for this chapter.
+7. Consider the pacing and emotional arc of the chapter.
+8. Review your extracted information to ensure it's directly based on the provided story premise. Avoid inventing new elements not present in the original content.
+</chapter_analysis>
+
+Now, using the information from your analysis, create a detailed outline for Chapter {{CHAPTER_NUMBER}}. Format your response as follows:
+
+1. Chapter Summary (1-2 paragraphs)
+   Provide a concise overview of the chapter's main events and significance.
+
+2. Key Plot Events (bullet points)
+   List the major events that should occur in this chapter.
+
+3. Character Development (bullet points)
+   Describe important character interactions or development moments.
+
+4. Setting Details (bullet points)
+   Note any significant locations or environmental elements to be featured.
+
+5. Connections to Overall Story (bullet points)
+   Explain how this chapter relates to and advances the broader narrative.
+
+Remember to focus specifically on Chapter {{CHAPTER_NUMBER}}, though you may reference events from other chapters for context if necessary. Ensure that all information in your outline is directly derived from the provided story premise, without inventing new elements.
+
+Here's an example of the desired output structure (using generic placeholders):
+
+Chapter Summary:
+[1-2 paragraphs summarizing the chapter]
+
+Key Plot Events:
+• [Event 1]
+• [Event 2]
+• [Event 3]
+
+Character Development:
+• [Character 1]: [Development point]
+• [Character 2]: [Development point]
+
+Setting Details:
+• [Setting element 1]
+• [Setting element 2]
+
+Connections to Overall Story:
+• [Connection 1]
+• [Connection 2]
+
+Please proceed with your chapter outline based on the provided story premise. Your final output should consist only of the chapter outline and should not duplicate or rehash any of the work you did in the chapter analysis.
